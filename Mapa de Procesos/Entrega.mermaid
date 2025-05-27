@@ -1,0 +1,50 @@
+flowchart TD
+  %% Definición de estilos
+  classDef fin_exito fill:#c8e6c9,stroke:#2e7d32;
+  classDef fin_error fill:#ffcdd2,stroke:#c62828;
+
+  %% Mapa de procesos central
+  REC["Recepción y Evaluación Inicial del Vehículo"]
+  PRE["Pre-cotización"]
+  CAL1["Inspección - Calidad del Vehículo"]
+  PLAN["Planificación de Intervenciones"]
+  GEST["Gestión Vehicular"]
+  TALLER["Arreglo"]
+  COT["Cotización Comercial"]
+  VTA["Venta y Documentación"]
+  ENT["Entrega al Cliente"]
+  POSV["Postventa:<br/>- Garantía<br/>- Trámites pendientes"]
+  REP["Gestión de Repuestos y Stock"]
+  ALM["Almacén del Taller"]
+
+  REC --> PRE --> CAL1 --> PLAN
+  PLAN --> GEST
+  PLAN --> TALLER
+  TALLER --> COT
+  COT --> VTA
+  VTA --> ENT
+
+  %% Conexiones de soporte
+  TALLER -.-> REP
+  REP --> ALM
+
+  %% Subproceso: Entrega al Cliente
+  subgraph D["Subproceso: Entrega al Cliente"]
+    D_Start(["Inicio: Vehículo disponible para entrega"])
+    D_Start --> D_ConfDoc["Confirmar documentación y pago"]
+    D_ConfDoc --> D_RevVeh["Revisar estado físico del vehículo"]
+    D_RevVeh --> D_Cita["Coordinar cita con el cliente"]
+    D_Cita --> D_Entrega["Realizar entrega física del vehículo"]
+    D_Entrega --> D_Firma["Cliente firma conformidad"]
+    D_Firma --> D_Cierre{"¿Cierre correcto en el sistema?"}
+
+    D_Cierre -- No --> D_Corr["Corregir registro o seguimiento"]
+    D_Corr --> D_Cierre
+
+    D_Cierre -- Sí --> D_Fin(["Fin del proceso: entrega realizada y cerrada"])
+    class D_Fin fin_exito
+  end
+
+  %% Enlace del subproceso al flujo general
+  ENT --> D_Start
+  D_Fin --> POSV

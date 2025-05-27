@@ -1,0 +1,59 @@
+flowchart TD
+  %% Definición de estilos
+  classDef fin_exito fill:#c8e6c9,stroke:#2e7d32;
+  classDef fin_error fill:#ffcdd2,stroke:#c62828;
+
+  %% Mapa de procesos central
+  REC["Recepción y Evaluación Inicial del Vehículo"]
+  PRE["Pre-cotización"]
+  CAL1["Inspección - Calidad del Vehículo"]
+  PLAN["Planificación de Intervenciones"]
+  GEST["Gestión Vehicular"]
+  TALLER["Arreglo"]
+  COT["Cotización Comercial"]
+  VTA["Venta y Documentación"]
+  ENT["Entrega al Cliente"]
+  POSV["Postventa:<br/>- Garantía<br/>- Trámites pendientes"]
+  ALM["Almacén del Taller"]
+
+  REC --> PRE --> CAL1 --> PLAN
+  PLAN --> GEST
+  PLAN --> TALLER
+  TALLER --> COT --> VTA --> ENT --> POSV
+
+  %% Subproceso: Gestión de Repuestos y Stock
+  TALLER -.-> RREP_START
+
+  subgraph RREP["Subproceso: Gestión de Repuestos y Stock"]
+    RREP_START(["Inicio: Pedido de repuestos"])
+    RREP_START --> recep["Recepción del pedido"]
+    recep --> validaInv["Validar inventario"]
+    validaInv --> hayStock{"¿Hay stock disponible?"}
+
+    hayStock -- Sí --> notificaPrep["Notificar al preparador"]
+    notificaPrep --> controlCalidad["Control de calidad"]
+    controlCalidad --> comunicaTaller["Comunicar a administrador de turnos"]
+    comunicaTaller --> verificacionUso["Verificar que el repuesto fue instalado"]
+    verificacionUso --> fueInstalado{"¿Repuesto efectivamente instalado?"}
+
+    fueInstalado -- No --> alertaRobo["Generar alerta de posible desvío"]
+    alertaRobo --> finAlerta(["Fin del proceso con incidente registrado"])
+    class finAlerta fin_error
+
+    fueInstalado -- Sí --> fin(["Fin: repuesto entregado e instalado correctamente"])
+    class fin fin_exito
+
+    hayStock -- No --> verificaProv["Verificar proveedor"]
+    verificaProv --> pedido["Generar pedido"]
+    pedido --> seguimiento["Hacer seguimiento"]
+    seguimiento --> recibido{"¿Repuesto en condiciones?"}
+
+    recibido -- No --> reclamo["Reclamar a proveedor"]
+    reclamo --> seguimiento
+
+    recibido -- Sí --> notificaPrep
+  end
+
+  %% Conexión del subproceso al flujo central
+  fin --> ALM
+  finAlerta --> ALM

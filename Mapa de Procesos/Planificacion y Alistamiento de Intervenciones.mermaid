@@ -1,0 +1,44 @@
+flowchart TD
+  %% Estilos
+  classDef fin_exito fill:#c8e6c9,stroke:#2e7d32;
+  classDef fin_error fill:#ffcdd2,stroke:#c62828;
+
+  %% Subproceso: Planificación y alistamiento de intervenciones
+  subgraph P2["Proceso: Planificación y alistamiento de intervenciones"]
+    PLAN["Planificación de Intervenciones"] --> validacion["Validación en sistema de peritajes"]
+    validacion --> planifica["Planificación y priorización de tareas"]
+    planifica --> checkProv["Verificación de disponibilidad de proveedor"]
+    checkProv --> provDisponible{"¿Proveedor disponible?"}
+
+    %% Ruta taller propio
+    provDisponible -- No --> tallerPropio["Intervención en taller propio"]
+    tallerPropio --> notificaInt["Notificación al preparador interno"]
+    notificaInt --> preparaInt["Preparación y reparación en taller"]
+    preparaInt --> seguimientoInt["Actualización de seguimiento interno"]
+    seguimientoInt --> confirmaInt{"¿Trabajo finalizado (taller propio)?"}
+    confirmaInt -- No --> esperaInt["Esperar finalización"]
+    esperaInt --> confirmaInt
+    confirmaInt -- Sí --> actualizaSis1["Actualizar sistema"]
+
+    %% Ruta proveedor externo
+    provDisponible -- Sí --> solicitaProv["Solicitud de turno al proveedor"]
+    solicitaProv --> notificaProv["Notificación al preparador"]
+    notificaProv --> preparaVeh["Preparación del vehículo para traslado"]
+    preparaVeh --> envio["Envío al proveedor"]
+    envio --> confirmaEnt["Confirmación de entrega"]
+    confirmaEnt --> seguimientoProv["Actualización de seguimiento proveedor"]
+    seguimientoProv --> confirmaProv{"¿Trabajo finalizado (proveedor)?"}
+    confirmaProv -- No --> esperaProv["Esperar nueva confirmación"]
+    esperaProv --> confirmaProv
+    confirmaProv -- Sí --> actualizaSis2["Actualizar sistema"]
+
+    %% Convergencia y fin de subproceso
+    actualizaSis1 --> inspeccion["Pedido de inspección final"]
+    actualizaSis2 --> inspeccion
+    inspeccion --> P2_Fin(["Fin del proceso"])
+    class P2_Fin fin_exito
+  end
+
+  %% Conexión al flujo general
+  P2_Fin --> GEST["Gestión Vehicular"]
+  GEST --> TALLER["Arreglo"]

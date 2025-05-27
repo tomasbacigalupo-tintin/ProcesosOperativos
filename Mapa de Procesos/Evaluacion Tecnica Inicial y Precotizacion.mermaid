@@ -1,0 +1,29 @@
+flowchart TD
+  %% Estilos comunes
+  classDef fin_exito fill:#c8e6c9,stroke:#2e7d32;
+  classDef fin_error fill:#ffcdd2,stroke:#c62828;
+
+  %% Conexión desde la Fase 1
+  REC["Recepción y Evaluación Inicial del Vehículo"] --> P3_Start
+
+  %% Subproceso: Evaluación técnica inicial y pre-cotización
+  subgraph P3["Proceso: Evaluación técnica inicial y pre-cotización"]
+    P3_Start(["Inicio: Evaluación técnica inicial"])
+    P3_Start --> peritaje["Revisión del peritaje"]
+    peritaje --> costos["Estimación de costos base"]
+    costos --> criterios["Aplicación de criterios de precios y márgenes"]
+    criterios --> precotiza["Emisión de pre-cotización"]
+    precotiza --> valida{"¿Es rentable intervenir el vehículo?"}
+
+    valida -- No --> ventaDirecta["Enviar a venta sin intervención"]
+    ventaDirecta --> comunica["Comunicar pre-cotización a responsable"]
+
+    valida -- Sí --> continua["Continuar con planificación de intervención"]
+    continua --> comunica
+
+    comunica --> P3_FinSuc(["Fin Pre-cotización"])
+    class P3_FinSuc fin_exito
+  end
+
+  %% Conexión a la siguiente etapa del mapa general
+  P3_FinSuc --> CAL1["Inspección - Calidad del Vehículo"]

@@ -1,0 +1,46 @@
+flowchart TD
+  %% Definición de estilos
+  classDef fin_exito fill:#c8e6c9,stroke:#2e7d32;
+  classDef fin_error fill:#ffcdd2,stroke:#c62828;
+
+  %% Mapa de procesos central
+  REC["Recepción y Evaluación Inicial del Vehículo"]
+  PRE["Pre-cotización"]
+  CAL1["Inspección - Calidad del Vehículo"]
+  PLAN["Planificación de Intervenciones"]
+  GEST["Gestión Vehicular"]
+  TALLER["Arreglo"]
+  COT["Cotización Comercial"]
+  VTA["Venta y Documentación"]
+  ENT["Entrega al Cliente"]
+  POSV["Postventa:<br/>- Garantía<br/>- Trámites pendientes"]
+  REP["Gestión de Repuestos y Stock"]
+  ALM["Almacén del Taller"]
+
+  REC --> PRE --> CAL1 --> PLAN
+  PLAN --> GEST
+  PLAN --> TALLER
+  TALLER --> COT --> VTA --> ENT --> POSV
+
+  %% Conexiones de soporte
+  TALLER -.-> REP --> ALM
+
+  %% Subproceso: Gestión de reclamos postventa
+  subgraph R7["Subproceso: Gestión de reclamos postventa"]
+    R7_Start(["Inicio: Recepción del reclamo del cliente"])
+    R7_Start --> R7_Registro["Registrar reclamo en sistema"]
+    R7_Registro --> R7_Diagnostico["Realizar diagnóstico técnico del problema"]
+    R7_Diagnostico --> R7_ReqRep{"¿Requiere reparación?"}
+
+    R7_ReqRep -- No --> R7_Comunica["Comunicar resolución al cliente"]
+    R7_Comunica --> R7_Seguimiento["Seguimiento post-reclamo"]
+    R7_Seguimiento --> R7_Fin(["Fin del proceso"])
+    class R7_Fin fin_exito
+
+    R7_ReqRep -- Sí --> R7_Repara["Ejecutar reparación"]
+    R7_Repara --> R7_Comunica
+  end
+
+  %% Enlace del subproceso al flujo general
+  POSV --> R7_Start
+  R7_Fin --> POSV

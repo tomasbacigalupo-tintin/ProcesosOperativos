@@ -1,0 +1,47 @@
+flowchart TD
+  %% Estilos
+  classDef fin_exito fill:#c8e6c9,stroke:#2e7d32;
+  classDef fin_error fill:#ffcdd2,stroke:#c62828;
+
+  %% Fase 1: Recepción y evaluación inicial del vehículo
+  subgraph F1["Fase 1: Recepción y evaluación inicial del vehículo"]
+    F1_Start(["Inicio Fase 1"])
+    F1_Start --> F1_Eval["Recepción y evaluación visual/técnica"]
+    F1_Eval --> F1_DatosOK{"¿Datos completos y estado evaluable?"}
+
+    F1_DatosOK -- No --> F1_Rechazo["Rechazo o reclamo por ingreso incompleto"]
+    F1_Rechazo --> F1_FinErr(["Fin Fase 1 (Error)"])
+    class F1_FinErr fin_error
+
+    F1_DatosOK -- Sí --> F1_Carga["Carga de datos en sistema de peritaje"]
+    F1_Carga --> F1_CargaOK{"¿Carga exitosa?"}
+
+    F1_CargaOK -- No --> F1_RetryCarga["Reintentar carga de datos"]
+    F1_RetryCarga -.-> F1_Carga
+
+    F1_CargaOK -- Sí --> F1_Com["Comunicación a encargados comerciales"]
+    F1_Com --> F1_ComOK{"¿Comunicación exitosa?"}
+
+    F1_ComOK -- No --> F1_RetryCom["Reintentar comunicación"]
+    F1_RetryCom -.-> F1_Com
+
+    F1_ComOK -- Sí --> F1_Ingreso["Ingreso físico al stock"]
+    F1_Ingreso --> F1_Valid["Validación en canal general"]
+    F1_Valid --> F1_FinSuc(["Fin Fase 1 (Éxito)"])
+    class F1_FinSuc fin_exito
+  end
+
+  %% Conexión al mapa de procesos general
+  F1_FinSuc --> PRE["Pre-cotización"]
+  PRE --> CAL1["Inspección - Calidad del Vehículo"]
+  CAL1 --> PLAN["Planificación de Intervenciones"]
+  PLAN --> GEST["Gestión Vehicular"]
+  PLAN --> TALLER["Arreglo"]
+  TALLER --> COT["Cotización Comercial"]
+  COT --> VTA["Venta y Documentación"]
+  VTA --> ENT["Entrega al Cliente"]
+  ENT --> POSV["Postventa:<br/>- Garantía<br/>- Trámites pendientes"]
+
+  %% Procesos de soporte
+  TALLER -.-> REP["Gestión de Repuestos y Stock"]
+  REP --> ALM["Almacén del Taller"]

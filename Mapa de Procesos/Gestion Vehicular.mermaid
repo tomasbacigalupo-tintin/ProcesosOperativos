@@ -1,0 +1,67 @@
+flowchart TD
+  %% Definición de estilos
+  classDef fin_exito fill:#c8e6c9,stroke:#2e7d32;
+  classDef fin_error fill:#ffcdd2,stroke:#c62828;
+
+  %% Mapa de procesos central
+  REC["Recepción y Evaluación Inicial del Vehículo"]
+  PRE["Pre-cotización"]
+  CAL1["Inspección - Calidad del Vehículo"]
+  PLAN["Planificación de Intervenciones"]
+  TALLER["Arreglo"]
+  COT["Cotización Comercial"]
+  VTA["Venta y Documentación"]
+  ENT["Entrega al Cliente"]
+  POSV["Postventa:<br/>- Garantía<br/>- Trámites pendientes"]
+  REP["Gestión de Repuestos y Stock"]
+  ALM["Almacén del Taller"]
+
+  REC --> PRE --> CAL1 --> PLAN
+  PLAN --> GEST_SUB["Gestión Vehicular"]
+  PLAN --> TALLER
+
+  %% Subproceso: Gestión Vehicular
+  subgraph "Subproceso: Gestión Vehicular"
+    GEST_SUB_START(["Ingreso físico del vehículo"]) --> OKN{"¿Es OK Negro?"}
+    OKN -- No --> PER["Peritaje del vehículo"]
+    OKN -- Sí --> ARRE["Esperar arreglo del encargado"] --> PER
+
+    PER --> EST{"¿Cumple con lo estético?"}
+    EST -- No --> ESTETICA["Preparación Estética"] --> PEDFOTO["Pedido de Foto"]
+    EST -- Sí --> PEDFOTO
+
+    PEDFOTO --> PEDCORRECTO{"¿Estuvo bien realizado el pedido?"}
+    PEDCORRECTO -- No --> REV["Revisar si fue correctamente cargado el pedido"] --> LISTAFOTO{"¿Está lista la foto?"}
+    PEDCORRECTO -- Sí --> NOTIF["Notificar al encargado para dar prioridad"] --> LISTAFOTO
+
+    LISTAFOTO -- Sí --> PUB["Publicación Ecommerce"]
+    LISTAFOTO -- No --> PEDFOTO
+
+    PUB --> REVPLAN["Revisar planilla de peritaje"]
+    REVPLAN --> TECSEG{"¿Cumple con técnico de seguridad?"}
+    TECSEG -- No --> PRETEC["Preparación técnica esencial"] --> CALIDAD1["1. Control de Calidad Vehicular"]
+    TECSEG -- Sí --> CALIDAD1
+
+    CALIDAD1 --> CALIDADOK{"¿Cumple con peritaje y calidad esperada?"}
+    CALIDADOK -- Sí --> OKBLANCO["Exhibido OK Blanco"]
+    CALIDADOK -- No --> PRETEC
+
+    OKBLANCO --> PASA30{"¿Pasaron 30 días en OK Blanco?"}
+    PASA30 -- Sí --> CRITOKV{"¿Cumple criterios OK Verde?"}
+    PASA30 -- No --> EQUIPO0{"¿Lo tomó Equipo 0 para OK Verde?"}
+
+    EQUIPO0 -- Sí --> PREOKV["Preparación OK Verde"]
+    CRITOKV -- Sí --> PREOKV
+    CRITOKV -- No --> PREOKG["Preparación OK Gris"]
+
+    PREOKV --> CALIDAD2["2. Control de Calidad Vehicular"]
+    PREOKG --> CALIDAD2
+    CALIDAD2 --> FIN["Vehículo preparado"]
+  end
+
+  %% Conexión al flujo principal
+  FIN --> TALLER
+  TALLER --> COT --> VTA --> ENT --> POSV
+
+  %% Procesos de soporte
+  TALLER -.-> REP --> ALM

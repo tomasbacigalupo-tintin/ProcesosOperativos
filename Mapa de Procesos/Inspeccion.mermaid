@@ -1,0 +1,57 @@
+flowchart TD
+  %% Definición de estilos
+  classDef fin_exito fill:#c8e6c9,stroke:#2e7d32;
+  classDef fin_error fill:#ffcdd2,stroke:#c62828;
+
+  %% Mapa de procesos central
+  REC["Recepción y Evaluación Inicial del Vehículo"]
+  PRE["Pre-cotización"]
+  CAL1["Inspección - Calidad del Vehículo"]
+  PLAN["Planificación de Intervenciones"]
+  GEST["Gestión Vehicular"]
+  TALLER["Arreglo"]
+  COT["Cotización Comercial"]
+  VTA["Venta y Documentación"]
+  ENT["Entrega al Cliente"]
+  POSV["Postventa:<br/>- Garantía<br/>- Trámites pendientes"]
+  REP["Gestión de Repuestos y Stock"]
+  ALM["Almacén del Taller"]
+
+  REC --> PRE --> CAL1 --> PLAN
+  PLAN --> GEST
+  PLAN --> TALLER
+  TALLER --> COT
+  COT --> VTA --> ENT --> POSV
+
+  %% Conexiones de soporte
+  TALLER -.-> REP
+  REP --> ALM
+
+  %% Subproceso P4: Validación previa a venta (desde Gestión Vehicular)
+  subgraph P4["Proceso: Validación previa a venta"]
+    P4_Start(["Inicio: Vehículo recibido desde intervención o gestión vehicular"])
+    P4_Start --> P4_Rentable{"¿Está en condiciones de venta sin intervención?"}
+
+    %% Ruta directa
+    P4_Rentable -- Sí --> P4_RevisarBasico["Revisión básica de limpieza, estética y documentos"]
+    P4_RevisarBasico --> P4_AprobarDirecto["Aprobación para venta sin intervención"]
+    P4_AprobarDirecto --> P4_Transferir["Transferir a área de ventas"]
+    P4_Transferir --> P4_Registrar["Registrar vehículo en sistema comercial"]
+    class P4_Registrar fin_exito
+
+    %% Ruta de corrección
+    P4_Rentable -- No --> P4_VerificarInt["Verificar que se hayan realizado todas las intervenciones"]
+    P4_VerificarInt --> P4_Checklist["Completar checklist de control de calidad"]
+    P4_Checklist --> P4_PruebaFinal["Realizar prueba final (si aplica)"]
+    P4_PruebaFinal --> P4_Cumple{"¿Cumple con criterios técnicos y estéticos?"}
+    P4_Cumple -- No --> P4_RegistrarFallas["Registrar fallas o desvíos detectados"]
+    P4_RegistrarFallas --> P4_NotificarTaller["Notificar al taller para corrección"]
+    P4_NotificarTaller --> P4_VerificarInt
+    P4_Cumple -- Sí --> P4_AprobarTransferencia["Autorizar traspaso a venta"]
+    P4_AprobarTransferencia --> P4_Transferir
+  end
+
+  %% Enlace del subproceso P4 al flujo general
+  GEST --> P4_Start
+  P4_Registrar --> VTA
+

@@ -1,0 +1,46 @@
+flowchart TD
+  %% Definición de estilos
+  classDef fin_exito fill:#c8e6c9,stroke:#2e7d32;
+  classDef fin_error fill:#ffcdd2,stroke:#c62828;
+
+  %% Mapa de procesos central
+  REC["Recepción y Evaluación Inicial del Vehículo"]
+  PRE["Pre-cotización"]
+  CAL1["Inspección - Calidad del Vehículo"]
+  PLAN["Planificación de Intervenciones"]
+  GEST["Gestión Vehicular"]
+  TALLER["Arreglo"]
+  COT["Cotización Comercial"]
+  VTA["Venta y Documentación"]
+  ENT["Entrega al Cliente"]
+  POSV["Postventa:<br/>- Garantía<br/>- Trámites pendientes"]
+  REP["Gestión de Repuestos y Stock"]
+  ALM["Almacén del Taller"]
+
+  REC --> PRE --> CAL1 --> PLAN
+  PLAN --> GEST
+  PLAN --> TALLER
+  TALLER --> COT --> VTA --> ENT --> POSV
+  TALLER -.-> REP --> ALM
+
+  %% Subproceso: Recepción de mercancías
+  subgraph RMI["Subproceso: Recepción de mercancías"]
+    RMI_Start(["Inicio: Recepción de mercancías"])
+    RMI_Start --> RMI_Inv["Gestionar inventario"]
+    RMI_Inv --> RMI_Sum["Suministrar al taller"]
+    RMI_Sum --> RMI_Dev{"¿Hubo devoluciones?"}
+
+    RMI_Dev -- Sí --> RMI_GestDev["Gestionar devoluciones"]
+    RMI_GestDev --> RMI_ProvUpd["Actualizar proveedor"]
+    RMI_ProvUpd --> RMI_Rep["Analizar y generar reportes"]
+
+    RMI_Dev -- No --> RMI_Prov["Gestionar relación con proveedores"]
+    RMI_Prov --> RMI_Rep
+
+    RMI_Rep --> RMI_Fin(["Fin del proceso"])
+    class RMI_Fin fin_exito
+  end
+
+  %% Conexión del subproceso al flujo central
+  ALM --> RMI_Start
+  RMI_Fin --> ALM

@@ -1,0 +1,65 @@
+flowchart TD
+  %% Definición de estilos
+  classDef fin_exito fill:#c8e6c9,stroke:#2e7d32;
+  classDef fin_error fill:#ffcdd2,stroke:#c62828;
+
+  %% Mapa de procesos central
+  REC["Recepción y Evaluación Inicial del Vehículo"]
+  PRE["Pre-cotización"]
+  CAL1["Inspección - Calidad del Vehículo"]
+  PLAN["Planificación de Intervenciones"]
+  GEST["Gestión Vehicular"]
+  TALLER["Arreglo"]
+  VTA["Venta y Documentación"]
+  ENT["Entrega al Cliente"]
+  POSV["Postventa:<br/>- Garantía<br/>- Trámites pendientes"]
+  REP["Gestión de Repuestos y Stock"]
+  ALM["Almacén del Taller"]
+
+  REC --> PRE --> CAL1 --> PLAN
+  PLAN --> GEST
+  PLAN --> TALLER
+
+  %% Subproceso P5: Aprobación de trabajos
+  subgraph P5["Subproceso: Aprobación de trabajos"]
+    P5_Start(["Inicio: Aprobación de trabajos"])
+    P5_Start --> P5_Recibe["Recepción de orden de intervención"]
+    P5_Recibe --> P5_Asigna["Asignación de tareas al equipo"]
+    P5_Asigna --> P5_Ejecuta["Ejecución técnica en taller"]
+    P5_Ejecuta --> P5_CC{"¿Control interno de calidad aprobado?"}
+
+    P5_CC -- No --> P5_Corrige["Realizar correcciones"]
+    P5_Corrige --> P5_Ejecuta
+
+    P5_CC -- Sí --> P5_Informe["Generar informe de avances"]
+    P5_Informe --> P5_Finaliza["Finalización y liberación para inspección"]
+    P5_Finaliza --> P5_Fin(["Fin Subproceso"])
+    class P5_Fin fin_exito
+  end
+
+  TALLER --> P5_Start
+
+  %% Subproceso C6: Cotización Comercial
+  subgraph C6["Subproceso: Cotización Comercial"]
+    C6_Start(["Inicio: Consolidar datos técnicos"])
+    C6_Start --> Consolidar["Consolidar costos finales"]
+    Consolidar --> Margenes["Precios y márgenes"]
+    Margenes --> AprobCost{"Aprobación de Costo Comercial"}
+    AprobCost --> Emision["Emitir cotización formal"]
+    Emision --> Comunica["Comunicar cotización al cliente"]
+    Comunica --> ClienteAprueba{"¿Cliente aprueba la cotización?"}
+
+    ClienteAprueba -- No --> Ajusta["Ajustar cotización si es necesario"]
+    Ajusta --> Emision
+
+    ClienteAprueba -- Sí --> Registrar["Registrar cotización en el sistema"]
+    Registrar --> C6_Fin(["Fin Cotización Comercial"])
+    class C6_Fin fin_exito
+  end
+
+  P5_Fin --> C6_Start
+  C6_Fin --> VTA
+
+  %% Resto del flujo y soporte
+  VTA --> ENT --> POSV
+  TALLER -.-> REP --> ALM

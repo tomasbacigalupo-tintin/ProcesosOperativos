@@ -1,0 +1,33 @@
+flowchart TD
+  %% Flujo operativo central - Concesionaria
+
+  REC["Recepción y Evaluación Inicial del Vehículo"]
+  PRE["Pre-cotización"]
+  CAL1["Inspección - Calidad del Vehículo"]
+  PLAN["Planificación de Intervenciones"]
+  GEST["Gestión Vehicular"]
+  TALLER["Arreglo"]
+  COT["Cotización Comercial"]
+  VTA["Venta y Documentación"]
+  ENT["Entrega al Cliente"]
+  POSV["Postventa:<br/>- Garantía<br/>- Trámites pendientes"]
+
+  %% Procesos de soporte (no línea principal)
+  REP["Gestión de Repuestos y Stock"]
+  ALM["Almacén del Taller"]
+
+  %% Flujo principal
+  REC --> PRE --> CAL1 --> PLAN
+  PLAN --> GEST
+
+  %% Bifurcación operativa desde planificación
+  PLAN --> TALLER
+
+  %% En taller propio se ejecutan arreglos
+  TALLER --> COT
+
+  COT --> VTA --> ENT --> POSV
+
+  %% Conexiones de soporte
+  TALLER -.-> REP
+  REP --> ALM
