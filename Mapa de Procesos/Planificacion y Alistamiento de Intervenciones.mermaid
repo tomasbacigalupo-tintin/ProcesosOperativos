@@ -8,7 +8,7 @@ flowchart TD
     PLAN["Planificación de Intervenciones"] --> validacion["Validación en sistema de peritajes"]
     validacion --> planifica["Planificación y priorización de tareas"]
     planifica --> checkProv["Verificación de disponibilidad de proveedor"]
-    checkProv --> provDisponible{"¿Proveedor disponible?"}
+    checkProv --> provDisponible{"¿Se quiere trabajar con proveedor externo?"}
 
     %% Ruta taller propio
     provDisponible -- No --> tallerPropio["Intervención en taller propio"]
