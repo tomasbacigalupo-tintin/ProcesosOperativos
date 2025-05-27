@@ -12,7 +12,7 @@ flowchart TD
   COT["Cotización Comercial"]
   VTA["Venta y Documentación"]
   ENT["Entrega al Cliente"]
-  POSV["Postventa:Garantía - Trámites pendientes"]
+  POSV["Postventa: Garantía - Trámites pendientes"]
   REP["Gestión de Repuestos y Stock"]
   ALM["Almacén del Taller"]
 
@@ -40,18 +40,20 @@ flowchart TD
     PUB --> REVPLAN["Revisar planilla de peritaje"]
     REVPLAN --> TECSEG{"¿Cumple con técnico de seguridad?"}
     TECSEG -- No --> PRETEC["Preparación técnica esencial"]
-    PRETEC --> CALIDAD1["1. Control de Calidad Vehicular"]
-    TECSEG -- Sí --> CALIDAD1
+    TECSEG -- Sí --> CALIDAD1["1. Control de Calidad Vehicular"]
+    PRETEC --> CALIDAD1
 
     CALIDAD1 --> CALIDADOK{"¿Cumple con peritaje y calidad esperada?"}
     CALIDADOK -- Sí --> OKBLANCO["Exhibido OK Blanco"]
     CALIDADOK -- No --> PRETEC
 
-    OKBLANCO --> PASA30{"¿Pasaron 30 días en OK Blanco?"}
-    PASA30 -- Sí --> CRITOKV{"¿Cumple criterios OK Verde?"}
-    PASA30 -- No --> EQUIPO0{"¿Lo tomó Equipo 0 para OK Verde?"}
+    %% Reordenamos las preguntas tras OK Blanco, eliminando el nodo erróneo
+    OKBLANCO --> EQUIPOG{"¿Lo tomó el equipo G para OK Verde?"}
+    EQUIPOG -- Sí --> PREOKV["Preparación OK Verde"]
+    EQUIPOG -- No --> PASA30{"¿Pasaron 30 días en OK Blanco?"}
+    PASA30 -- Sí --> CRITOKV{"¿Cumple los criterios OK Verde?"}
+    PASA30 -- No --> EQUIPOG
 
-    EQUIPO0 -- Sí --> PREOKV["Preparación OK Verde"]
     CRITOKV -- Sí --> PREOKV
     CRITOKV -- No --> PREOKG["Preparación OK Gris"]
 
@@ -66,4 +68,5 @@ flowchart TD
 
   %% Procesos de soporte
   TALLER -.-> REP --> ALM
+
 
