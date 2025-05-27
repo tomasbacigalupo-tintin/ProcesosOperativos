@@ -39,7 +39,8 @@ flowchart TD
 
     PUB --> REVPLAN["Revisar planilla de peritaje"]
     REVPLAN --> TECSEG{"¿Cumple con técnico de seguridad?"}
-    TECSEG -- No --> PRETEC["Preparación técnica esencial"] --> CALIDAD1["1. Control de Calidad Vehicular"]
+    TECSEG -- No --> PRETEC["Preparación técnica esencial"]
+    PRETEC --> CALIDAD1["1. Control de Calidad Vehicular"]
     TECSEG -- Sí --> CALIDAD1
 
     CALIDAD1 --> CALIDADOK{"¿Cumple con peritaje y calidad esperada?"}
