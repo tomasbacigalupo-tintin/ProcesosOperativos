@@ -22,7 +22,7 @@ flowchart TD
 
   %% Subproceso: Gestión Vehicular
   subgraph "Subproceso: Gestión Vehicular"
-    GEST_SUB_START["Ingreso físico del vehículo"] --> OKN{"¿Es OK Negro?"}
+    GEST_SUB_START(["Ingreso físico del vehículo"]) --> OKN{"¿Es OK Negro?"}
     OKN -- No --> PER["Peritaje del vehículo"]
     OKN -- Sí --> ARRE["Esperar arreglo del encargado"] --> PER
 
