@@ -5,14 +5,14 @@ flowchart TD
 
   %% Mapa de procesos central
   REC["Recepción y Evaluación Inicial del Vehículo"]
-  PRE["Pre-cotización"]
-  CAL1["Inspección - Calidad del Vehículo"]
+  PRE["Pre\-cotización"]
+  CAL1["Inspección \- Calidad del Vehículo"]
   PLAN["Planificación de Intervenciones"]
   TALLER["Arreglo"]
   COT["Cotización Comercial"]
   VTA["Venta y Documentación"]
   ENT["Entrega al Cliente"]
-  POSV["Postventa: Garantía - Trámites pendientes"]
+  POSV["Postventa: Garantía \- Trámites pendientes"]
   REP["Gestión de Repuestos y Stock"]
   ALM["Almacén del Taller"]
 
@@ -40,14 +40,13 @@ flowchart TD
     PUB --> REVPLAN["Revisar planilla de peritaje"]
     REVPLAN --> TECSEG{"¿Cumple con técnico de seguridad?"}
     TECSEG -- No --> PRETEC["Preparación técnica esencial"]
-    TECSEG -- Sí --> CALIDAD1["1. Control de Calidad Vehicular"]
+    TECSEG -- Sí --> CALIDAD1["1\. Control de Calidad Vehicular"]
     PRETEC --> CALIDAD1
 
     CALIDAD1 --> CALIDADOK{"¿Cumple con peritaje y calidad esperada?"}
     CALIDADOK -- Sí --> OKBLANCO["Exhibido OK Blanco"]
     CALIDADOK -- No --> PRETEC
 
-    %% Reordenamos las preguntas tras OK Blanco, eliminando el nodo erróneo
     OKBLANCO --> EQUIPOG{"¿Lo tomó el equipo G para OK Verde?"}
     EQUIPOG -- Sí --> PREOKV["Preparación OK Verde"]
     EQUIPOG -- No --> PASA30{"¿Pasaron 30 días en OK Blanco?"}
@@ -57,7 +56,7 @@ flowchart TD
     CRITOKV -- Sí --> PREOKV
     CRITOKV -- No --> PREOKG["Preparación OK Gris"]
 
-    PREOKV --> CALIDAD2["2. Control de Calidad Vehicular"]
+    PREOKV --> CALIDAD2["2\. Control de Calidad Vehicular"]
     PREOKG --> CALIDAD2
     CALIDAD2 --> FIN["Vehículo preparado"]
   end
@@ -68,5 +67,6 @@ flowchart TD
 
   %% Procesos de soporte
   TALLER -.-> REP --> ALM
+
 
 
